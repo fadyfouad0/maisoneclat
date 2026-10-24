@@ -100,6 +100,6 @@ export default defineType({
   ],
   orderings: [{title: 'Display order', name: 'order', by: [{field: 'order', direction: 'asc'}]}],
   preview: {
-    select: {title: 'name', subtitle: 'category', media: 'image'},
+    select: {title: 'name', subtitle: 'category.singular', media: 'image'},
   },
 })
