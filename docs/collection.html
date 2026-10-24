@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>Maison Éclat | Collection</title>
 <script src="./support.js"></script>
+<script src="./sanity.js"></script>
 </head>
 <body>
 <x-dc>
@@ -289,13 +290,17 @@ img{display:block}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3400}}'>
 class Component extends DCLogic {
-  constructor(props) { super(props); this.state = { q: '', cat: 'All' }; }
+  constructor(props) { super(props); this.state = { q: '', cat: 'All', all: null, failed: false }; }
+
+  componentDidMount() {
+    window.Sanity.products().then((all) => this.setState({ all }), () => this.setState({ failed: true }));
+  }
 
   renderVals() {
     const s = this.state;
     return {
       ...(() => {
-        const ALL = [{"cat": "Chandelier", "img": "assets/161d7544adaf3555a5c7c3f9e8e49911.webp", "name": "Desert Rose", "mat": "Glass, gilded metal", "price": "On request", "lt": "New", "lc": "lb-new"}, {"cat": "Chandelier", "img": "assets/2b227a72a7ec6e00573e0648a656e3c6.webp", "name": "Branch", "mat": "Crystal, brass", "price": "EGP 185,000", "lt": "In the showroom", "lc": "lb-show"}, {"cat": "Chandelier", "img": "assets/7345e2e78b6c7c5b1e20e24486b006a8.webp", "name": "Spiral", "mat": "Crystal, chrome", "price": "EGP 96,000", "lt": "New", "lc": "lb-new"}, {"cat": "Chandelier", "img": "assets/e0e13a2b151fdf653414b2777e8ae5de.webp", "name": "Waterfall Column", "mat": "Crystal", "price": "On request", "lt": "Made to order", "lc": "lb-order"}, {"cat": "Pendant", "img": "assets/1299a019108e423f42d9e288007b2902.webp", "name": "Prism", "mat": "Coloured crystal", "price": "EGP 42,000", "lt": "In the showroom", "lc": "lb-show"}, {"cat": "Pendant", "img": "assets/e4f3b8eaede5a2e6843042b1c167b238.webp", "name": "Evette", "mat": "Smoked glass, brass", "price": "EGP 16,800", "lt": "Made to order", "lc": "lb-order"}, {"cat": "Pendant", "img": "assets/44ac0b63d1808f04ef20f3b6501ed9cb.webp", "name": "Mirza", "mat": "Glass, wood", "price": "On request", "lt": "Last piece", "lc": "lb-last"}, {"cat": "Pendant", "img": "assets/0bec61b82d9d845c0ccecc4bb3849c14.webp", "name": "Lantern", "mat": "Metal, opal glass", "price": "EGP 11,200", "lt": "Made to order", "lc": "lb-order"}, {"cat": "Wall light", "img": "assets/8e643a083cf4c824cb2175f503297165.webp", "name": "Oval", "mat": "Alabaster", "price": "EGP 21,000", "lt": "In the showroom", "lc": "lb-show"}, {"cat": "Wall light", "img": "assets/286ad7222d1efd08d86ab4639a7570b2.webp", "name": "Petal", "mat": "Alabaster", "price": "EGP 14,500", "lt": "Made to order", "lc": "lb-order"}, {"cat": "Wall light", "img": "assets/9d3676a5ba456b7812cf90e35ba12233.webp", "name": "Necklace", "mat": "Opal glass, metal", "price": "EGP 18,500", "lt": "New", "lc": "lb-new"}, {"cat": "Wall light", "img": "assets/4733f0b7d663e05d6c4eee8dcdc4c944.webp", "name": "Formosa", "mat": "Marble, bronze", "price": "EGP 24,000", "lt": "In the showroom", "lc": "lb-show"}, {"cat": "Wall light", "img": "assets/55c3eedc41c176a95378549bb8019d7a.webp", "name": "Stacked Alabaster", "mat": "Alabaster, brass", "price": "EGP 19,500", "lt": "New", "lc": "lb-new"}, {"cat": "Table lamp", "img": "assets/a6cf27a4dba06b9fb7057b75b2ebd129.webp", "name": "Mushroom", "mat": "Travertine, metal", "price": "EGP 12,500", "lt": "New", "lc": "lb-new"}, {"cat": "Table lamp", "img": "assets/2518200d46ae546dc89507ffa08bab92.webp", "name": "Tivaro", "mat": "Travertine", "price": "EGP 26,000", "lt": "In the showroom", "lc": "lb-show"}, {"cat": "Table lamp", "img": "assets/fa04153e085896e1be23d315075e6703.webp", "name": "Crystal Waterfall", "mat": "Crystal, chrome", "price": "EGP 32,000", "lt": "Last piece", "lc": "lb-last"}, {"cat": "Floor lamp", "img": "assets/95cddb35463c74a8410fdbba63c231b1.webp", "name": "Totem", "mat": "Alabaster", "price": "EGP 58,000", "lt": "In the showroom", "lc": "lb-show"}, {"cat": "Outdoor", "img": "assets/7d35291b5eab7c91e36046d24f7003be.webp", "name": "Pebble", "mat": "Stone composite", "price": "EGP 9,800", "lt": "New", "lc": "lb-new"}];
+        const ALL = s.all || [];
         const CATS = ["All", "Chandelier", "Pendant", "Wall light", "Table lamp", "Floor lamp", "Outdoor"], PL = {"All": "All", "Chandelier": "Chandeliers", "Pendant": "Pendants", "Wall light": "Wall lights", "Table lamp": "Table lamps", "Floor lamp": "Floor lamps", "Outdoor": "Outdoor"};
         const q = (s.q || '').trim().toLowerCase(), cat = s.cat || 'All';
         const hit = (p) => !q || (p.name + ' ' + p.mat + ' ' + p.cat + ' ' + PL[p.cat] + ' ' + p.lt).toLowerCase().includes(q);
@@ -305,13 +310,13 @@ class Component extends DCLogic {
         if (cat !== 'All') bits.push(PL[cat]);
         if (q) bits.push('"' + (s.q || '').trim() + '"');
         return {
-          total: '600+', items: list.map((p) => Object.assign({}, p, { href: p.name === 'Spiral' ? 'spiral.html' : 'desert-rose.html' })),
-          showing: !on ? 'A selection from more than 600 pieces'
+          total: '600+', items: list.map((p) => p),
+          showing: s.failed ? 'The collection could not be loaded. Please refresh.' : s.all === null ? 'Loading the collection…' : !on ? 'A selection from more than 600 pieces'
             : (list.length === 0 ? 'No matches in this selection' : list.length + (list.length === 1 ? ' match' : ' matches') + ' in this selection') + ' · ' + bits.join(' · '),
           chips: CATS.map((c) => ({ label: PL[c], n: c === 'All' ? '600+' : '', on: String(cat === c), pick: () => this.setState({ cat: c }) })),
           q: s.q || '', qCls: q ? 'on' : '', setQ: (e) => this.setState({ q: e.target.value }), clearQ: () => this.setState({ q: '' }),
           clearCls: on ? 'on' : '', clearAll: () => this.setState({ q: '', cat: 'All' }),
-          gridCls: list.length === 0 ? 'off' : '', noneCls: list.length === 0 ? 'on' : '',
+          gridCls: list.length === 0 ? 'off' : '', noneCls: s.all !== null && list.length === 0 ? 'on' : '',
         };
       })(),
     };
