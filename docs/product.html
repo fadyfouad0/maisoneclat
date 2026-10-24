@@ -426,7 +426,6 @@ class Component extends DCLogic {
 
   renderVals() {
     const s = this.state, p = s.p, S = window.Sanity;
-    const PL = { 'Chandelier': 'Chandeliers', 'Pendant': 'Pendants', 'Wall light': 'Wall lights', 'Table lamp': 'Table lamps', 'Floor lamp': 'Floor lamps', 'Outdoor': 'Outdoor' };
     if (!p) {
       return { name: s.failed ? 'Piece not found' : 'Loading…', catPl: 'Collection', hero: '', heroCls: 'hid', lc: 'lb-show', lt: '', cat: '', refTxt: '', mat: '',
         priceCls: 'hid', fromLbl: '', from: '', desc: s.failed ? 'This piece is no longer in the collection.' : '', szCls: 'hid', sizes: [], dims: '', sizeN: '', price: '', wa: 'index.html#d3-show',
@@ -437,7 +436,7 @@ class Component extends DCLogic {
     const sizePrice = (x) => x.price == null ? 'Price on request' : S.egp(x.price);
     const gallery = p.gallery || [];
     return {
-      name: p.name, catPl: PL[p.category] || p.category,
+      name: p.name, catPl: p.categoryPl,
       hero: S.img(gallery[0] || p.img, 1400), heroCls: '',
       lc: S.labelClass(p.availability), lt: p.availability, cat: p.category, refTxt: p.reference ? ' · No. ' + p.reference : '', mat: p.material || '',
       priceCls: '', fromLbl: priced.length > 1 ? 'From' : '', from: priced.length ? S.egp(Math.min.apply(null, priced)) : S.price(p.price),

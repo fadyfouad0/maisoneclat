@@ -290,10 +290,11 @@ img{display:block}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3400}}'>
 class Component extends DCLogic {
-  constructor(props) { super(props); this.state = { q: '', cat: 'All', all: null, failed: false }; }
+  constructor(props) { super(props); this.state = { q: '', cat: 'All', all: null, cats: [], failed: false }; }
 
   componentDidMount() {
     window.Sanity.products().then((all) => this.setState({ all }), () => this.setState({ failed: true }));
+    window.Sanity.categories().then((cats) => this.setState({ cats }), () => {});
   }
 
   renderVals() {
@@ -301,9 +302,10 @@ class Component extends DCLogic {
     return {
       ...(() => {
         const ALL = s.all || [];
-        const CATS = ["All", "Chandelier", "Pendant", "Wall light", "Table lamp", "Floor lamp", "Outdoor"], PL = {"All": "All", "Chandelier": "Chandeliers", "Pendant": "Pendants", "Wall light": "Wall lights", "Table lamp": "Table lamps", "Floor lamp": "Floor lamps", "Outdoor": "Outdoor"};
+        const CATS = ['All'].concat(s.cats.map((x) => x.key)), PL = { 'All': 'All' };
+        s.cats.forEach((x) => { PL[x.key] = x.label; });
         const q = (s.q || '').trim().toLowerCase(), cat = s.cat || 'All';
-        const hit = (p) => !q || (p.name + ' ' + p.mat + ' ' + p.cat + ' ' + PL[p.cat] + ' ' + p.lt).toLowerCase().includes(q);
+        const hit = (p) => !q || (p.name + ' ' + p.mat + ' ' + p.cat + ' ' + p.catPl + ' ' + p.lt).toLowerCase().includes(q);
         const list = ALL.filter((p) => (cat === 'All' || p.cat === cat) && hit(p));
         const on = q !== '' || cat !== 'All';
         const bits = [];
