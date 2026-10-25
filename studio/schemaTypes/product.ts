@@ -26,6 +26,29 @@ export default defineType({
       validation: (r) => r.required(),
     }),
     defineField({
+      name: 'subcategory',
+      title: 'Subcategory',
+      description: 'Optional. Only the subcategories of the chosen category are listed.',
+      type: 'reference',
+      to: [{type: 'subcategory'}],
+      hidden: ({document}) => !(document?.category as {_ref?: string} | undefined)?._ref,
+      options: {
+        disableNew: true,
+        filter: ({document}) => ({
+          filter: 'parent._ref == $category',
+          params: {category: (document?.category as {_ref?: string} | undefined)?._ref ?? ''},
+        }),
+      },
+      validation: (r) =>
+        r.custom(async (value, context) => {
+          const ref = (value as {_ref?: string} | undefined)?._ref
+          const category = (context.document?.category as {_ref?: string} | undefined)?._ref
+          if (!ref) return true
+          const parent = await context.getClient({apiVersion: '2025-01-01'}).fetch('*[_id==$id][0].parent._ref', {id: ref})
+          return parent === category || 'This subcategory belongs to a different category. Clear it or pick another.'
+        }),
+    }),
+    defineField({
       name: 'availability',
       title: 'Availability label',
       type: 'string',
